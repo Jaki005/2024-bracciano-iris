@@ -1,5 +1,8 @@
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,7 +12,7 @@ X = iris.data
 y = iris.target
 
 # Visualizzazione della distribuzione delle classi
-plt.figure(figsize=(12, 4))
+plt.figure(figsize=(4, 4))
 
 # Plot per i sepali
 plt.subplot(1, 2, 1)
@@ -38,3 +41,40 @@ plt.show()
 
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=26)
 
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+print(X_train_scaled)
+print(f"minimo: {min(X_train_scaled[:,0]) },massimo: {max(X_train_scaled[:,0])}, media:{np.mean(X_train_scaled)}")
+X_test_scaled = scaler.transform(X_test)
+
+mlp = MLPClassifier(
+    hidden_layer_sizes=(1,2),
+    activation="tanh",
+    random_state=99,
+    max_iter=2169
+)
+
+mlp.fit(X_train_scaled, y_train)
+
+y_predict = mlp.predict(X_test_scaled)
+
+accuracy = np.mean(y_predict == y_test)
+
+print(f"test loss: {mlp.loss_}")
+
+print(f"n_iter: {mlp.n_iter_}")
+
+print(f"accuratezza: {accuracy:.5f}")
+
+
+
+#finalmente usiamo la nostra rete neurale!!!!
+nuovo_iris = [
+    [5.0, 3.5, 1.5, 0.2]
+              ]
+
+nuovo_iris_scaled = scaler.fit_transform(nuovo_iris)
+previsione_iris = mlp.predict(nuovo_iris_scaled)
+print("il mio nuovo fiore ......")
+print("......rullo di tamburi.... ")
+print(iris.target_names[previsione_iris[0]])
